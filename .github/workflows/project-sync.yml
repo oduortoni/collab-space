@@ -1,0 +1,27 @@
+name: Sync GitHub Issues with Project Board
+
+on:
+  issues:
+    types: [opened, labeled, unlabeled, reopened, closed]
+  pull_request:
+    types: [opened, closed, labeled, unlabeled]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Smart Project Sync
+        uses: Monchi/actions-project-manager@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          organization: oduortoni
+          project-number: 1
+          column-config: |
+            Backlog:
+              - backlog
+            To Do (Next):
+              - todo
+            In Progress:
+              - in-progress
+            Done:
+              - done
