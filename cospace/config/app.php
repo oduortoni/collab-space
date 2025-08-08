@@ -123,4 +123,20 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Providers
+    |--------------------------------------------------------------------------
+    |
+    | These configuration options determine the providers used by Laravel.
+    | The "providers" key is used to specify the providers that should be
+    | registered with the application. The "aliases" key is used to specify
+    | the aliases that should be registered with the application.
+    |
+    */
+
+    'providers' => [
+        Src\Project\ProjectServiceProvider::class,
+    ],
+
 ];
