@@ -24,7 +24,7 @@ class ProjectService implements ProjectServiceInterface
     public function list(): mixed
     {
         $projects = $this->projectRepository->paginateLatest(10);
-        return $projects;
+        return $projects->items();
     }
 
     public function store(ProjectDTO $dto): mixed
