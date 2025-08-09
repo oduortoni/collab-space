@@ -60,6 +60,10 @@ class ProjectController extends Controller
 
         $project = $this->projectService->store($dto);
 
+        if ($request->wantsJson()) {
+            return response()->json($project, 201);
+        }
+
         return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'Project created successfully!');
     }
 
@@ -96,12 +100,20 @@ class ProjectController extends Controller
 
         $project = $this->projectService->update($dto, $id);
 
+        if(is_null($project)) {
+            return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'You cannot edit a project you did not create!');
+        }
+
         return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'Project updated successfully!');
     }
 
     public function destroy(int $id): RedirectResponse
     {
-        $this->projectService->delete($id);
+        $deleted = $this->projectService->delete($id);
+
+        if(!$deleted) {
+            return redirect()->route('projects.index')->with('message', 'Could not delete a project you did not create!');
+        }
         
         return redirect()->route('projects.index')->with('message', 'Project deleted successfully!');
     }
