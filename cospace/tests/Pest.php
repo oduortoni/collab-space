@@ -11,10 +11,6 @@
 |
 */
 
-pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
-
 /*
 |--------------------------------------------------------------------------
 | Expectations
@@ -103,7 +99,7 @@ uses()
 |     php artisan test --group=feature
 |
 */
-uses()
+uses(Tests\TestCase::class)
     ->group('feature')
     ->in('Feature');
 
@@ -121,7 +117,7 @@ uses()
 |     php artisan test --group=integration
 |
 */
-uses()
+uses(Tests\TestCase::class)
     ->group('integration')
     ->in('Integration');
 
