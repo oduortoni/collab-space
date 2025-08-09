@@ -8,6 +8,8 @@ interface Project {
     description: string;
     gif_url?: string;
     repo_url?: string;
+    created_at: string;
+    updated_at: string;
 }
 
 interface EditPageProps {
@@ -63,7 +65,7 @@ export default function Edit({ auth, project }: EditPageProps) {
                             <form onSubmit={submit} className="space-y-6">
                                 <div>
                                     <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Title
+                                        Title *
                                     </label>
                                     <input
                                         type="text"
@@ -71,6 +73,7 @@ export default function Edit({ auth, project }: EditPageProps) {
                                         value={data.title}
                                         onChange={(e) => setData('title', e.target.value)}
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                        required
                                     />
                                     {errors.title && <div className="text-red-600 text-sm mt-1">{errors.title}</div>}
                                 </div>
@@ -99,6 +102,7 @@ export default function Edit({ auth, project }: EditPageProps) {
                                         value={data.gif_url}
                                         onChange={(e) => setData('gif_url', e.target.value)}
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                        placeholder="https://example.com/demo.gif"
                                     />
                                     {errors.gif_url && <div className="text-red-600 text-sm mt-1">{errors.gif_url}</div>}
                                 </div>
@@ -113,6 +117,7 @@ export default function Edit({ auth, project }: EditPageProps) {
                                         value={data.repo_url}
                                         onChange={(e) => setData('repo_url', e.target.value)}
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                        placeholder="https://github.com/username/project"
                                     />
                                     {errors.repo_url && <div className="text-red-600 text-sm mt-1">{errors.repo_url}</div>}
                                 </div>

@@ -15,17 +15,45 @@ class ProjectTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user)
-            ->postJson(route('projects.store'), [
+        $response = $this->actingAs($user)
+            ->post(route('projects.store'), [
                 'title' => 'Test Project',
                 'description' => 'A small test project',
                 'gif_url' => 'https://example.com/demo.gif',
                 'repo_url' => 'https://github.com/example/repo',
-            ])
-            ->assertCreated()
-            ->assertJsonFragment(['title' => 'Test Project']);
+            ]);
 
+        $response->assertRedirect(route('projects.show', ['id' => 1]));
         $this->assertDatabaseHas('projects', ['title' => 'Test Project']);
+    }
+
+    public function test_user_can_update_project(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->put(route('projects.update', $project), [
+                'title' => 'Updated Project',
+                'description' => 'Updated description',
+                'gif_url' => 'https://example.com/updated.gif',
+                'repo_url' => 'https://github.com/example/updated',
+            ]);
+
+        $response->assertRedirect(route('projects.show', $project));
+        $this->assertDatabaseHas('projects', ['title' => 'Updated Project']);
+    }
+
+    public function test_user_can_delete_project(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->delete(route('projects.destroy', $project));
+
+        $response->assertRedirect(route('projects.index'));
+        $this->assertDatabaseMissing('projects', ['id' => $project->id]);
     }
 
     public function test_project_requires_title(): void
@@ -33,8 +61,31 @@ class ProjectTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->postJson(route('projects.store'), [])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors('title');
+            ->post(route('projects.store'), [])
+            ->assertSessionHasErrors('title');
+    }
+
+    public function test_project_requires_valid_url_for_gif(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('projects.store'), [
+                'title' => 'Test Project',
+                'gif_url' => 'invalid-url',
+            ])
+            ->assertSessionHasErrors('gif_url');
+    }
+
+    public function test_project_requires_valid_url_for_repo(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->post(route('projects.store'), [
+                'title' => 'Test Project',
+                'repo_url' => 'invalid-url',
+            ])
+            ->assertSessionHasErrors('repo_url');
     }
 }
