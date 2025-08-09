@@ -1,5 +1,4 @@
 name: Sync GitHub Issues with Project Board
-
 on:
   issues:
     types: [opened, labeled, unlabeled, reopened, closed]
@@ -10,18 +9,36 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Smart Project Sync
-        uses: Monchi/actions-project-manager@v1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          organization: oduortoni
-          project-number: 1
-          column-config: |
-            Backlog:
-              - backlog
-            To Do (Next):
-              - todo
-            In Progress:
-              - in-progress
-            Done:
-              - done
+      - name: Add to project based on labels
+        run: |
+          # Get labels from issue or PR
+          if [[ "${{ github.event_name }}" == "issues" ]]; then
+            LABELS=$(echo '${{ toJson(github.event.issue.labels.*.name) }}' | jq -r '.[]')
+            ITEM_ID="${{ github.event.issue.node_id }}"
+          else
+            LABELS=$(echo '${{ toJson(github.event.pull_request.labels.*.name) }}' | jq -r '.[]')
+            ITEM_ID="${{ github.event.pull_request.node_id }}"
+          fi
+          
+          # Add item to project
+          gh api graphql -f query='
+            mutation($project:ID!, $item:ID!) {
+              addProjectV2ItemById(input: {projectId: $project, contentId: $item}) {
+                item {
+                  id
+                }
+              }
+            }' -f project="PVT_kwHOABcd_s4AHw" -f item="$ITEM_ID"
+          
+          # Move to appropriate column based on labels
+          if echo "$LABELS" | grep -q "backlog"; then
+            echo "Moving to Backlog"
+          elif echo "$LABELS" | grep -q "todo"; then
+            echo "Moving to To Do"
+          elif echo "$LABELS" | grep -q "in-progress"; then
+            echo "Moving to In Progress"
+          elif echo "$LABELS" | grep -q "done"; then
+            echo "Moving to Done"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
