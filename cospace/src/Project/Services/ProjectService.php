@@ -21,33 +21,33 @@ class ProjectService implements ProjectServiceInterface
         protected ProjectRepositoryInterface $projectRepository
     ) {}
 
-    public function list(): JsonResponse
+    public function list(): mixed
     {
         $projects = $this->projectRepository->paginateLatest(10);
-        return response()->json($projects);
+        return $projects;
     }
 
-    public function store(ProjectDTO $dto): JsonResponse
+    public function store(ProjectDTO $dto): mixed
     {
         $project = $this->projectRepository->create($dto->toArray());
-        return response()->json($project, 201);
+        return $project;
     }
 
-    public function show(int $id): JsonResponse
+    public function show(int $id): mixed
     {
         $project = $this->projectRepository->find($id);
-        return response()->json($project);
+        return $project;
     }
 
-    public function update(ProjectDTO $dto, int $id): JsonResponse
+    public function update(ProjectDTO $dto, int $id): mixed
     {
         $project = $this->projectRepository->update($id, $dto->toArray());
-        return response()->json($project);
+        return $project;
     }
 
-    public function delete(int $id): JsonResponse
+    public function delete(int $id): bool
     {
-        $this->projectRepository->delete($id);
-        return response()->json(null, 204);
+        $deleted = $this->projectRepository->delete($id);
+        return $deleted;
     }
 }

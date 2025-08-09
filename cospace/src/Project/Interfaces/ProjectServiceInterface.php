@@ -12,16 +12,17 @@ namespace Src\Project\Interfaces;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Src\Project\Entities\ProjectDTO;
 
 interface ProjectServiceInterface
 {
-    public function list(Request $request): JsonResponse;
+    public function list(): mixed;
 
-    public function store(Request $request): JsonResponse;
+    public function store(ProjectDTO $dto): mixed;
 
-    public function show(int $id): JsonResponse;
+    public function show(int $id): mixed;
 
-    public function update(Request $request, int $id): JsonResponse;
+    public function update(ProjectDTO $dto, int $id): mixed;
 
-    public function delete(int $id): JsonResponse;
+    public function delete(int $id): bool;
 } 

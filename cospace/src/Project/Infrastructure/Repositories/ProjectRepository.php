@@ -3,12 +3,12 @@
 * author: @toni
 * date: 2025-08-08
 * description: Eloquent implementation of the project repository
-* file: src/Project/Repositories/ProjectRepository.php
+* file: src/Project/Infrastructure/Repositories/ProjectRepository.php
 */
 
 declare(strict_types=1);
 
-namespace Src\Project\Repositories;
+namespace Src\Project\Infrastructure\Repositories;
 
 use Src\Project\Interfaces\ProjectRepositoryInterface;
 use App\Models\Project;

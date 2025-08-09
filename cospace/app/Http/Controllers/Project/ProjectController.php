@@ -3,17 +3,18 @@
 * author: @toni
 * date: 2025-08-08
 * description: Project controller using ProjectService and ProjectDTO
-* file: app/Http/Controllers/ProjectController.php
+* file: app/Http/Controllers/Project/ProjectController.php
 */
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Project;
 
 use Illuminate\Http\Request;
-use Src\Project\DTOs\ProjectDTO;
+use Src\Project\Entities\ProjectDTO;
 use Src\Project\Interfaces\ProjectServiceInterface;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class ProjectController extends Controller
 {
@@ -23,7 +24,8 @@ class ProjectController extends Controller
 
     public function index(): JsonResponse
     {
-        return $this->projectService->list();
+        $project = $this->projectService->list();
+        return response()->json($projects);
     }
 
     public function store(Request $request): JsonResponse
@@ -40,12 +42,14 @@ class ProjectController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        return $this->projectService->store($dto);
+        $project = $this->projectService->store($dto);
+        return response()->json($project, 201);
     }
 
     public function show(int $id): JsonResponse
     {
-        return $this->projectService->show($id);
+        $project = $this->projectService->show($id);
+        return response()->json($project);
     }
 
     public function update(Request $request, int $id): JsonResponse
@@ -62,11 +66,13 @@ class ProjectController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        return $this->projectService->update($dto, $id);
+        $project = $this->projectService->update($dto, $id);
+        return response()->json($project);
     }
 
     public function destroy(int $id): JsonResponse
     {
-        return $this->projectService->delete($id);
+        $deleted = $this->projectService->delete($id);
+        return response()->json(null, 204);
     }
 }
