@@ -17,11 +17,17 @@ class ProjectRepository implements ProjectRepositoryInterface
 {
     public function paginateLatest(int $perPage): mixed
     {
-        return Project::latest()->paginate($perPage);
+        $projects = Project::whereHas('user', function($query) {
+            $query->where('id', auth()->id());
+        })->latest()->paginate($perPage);
+
+        return $projects;
     }
 
     public function create(array $data): mixed
     {
+        // ensure the authenticated user is set as the owner
+        $data['user_id'] = auth()->id();
         return Project::create($data);
     }
 
@@ -33,12 +39,24 @@ class ProjectRepository implements ProjectRepositoryInterface
     public function update(int $id, array $data): mixed
     {
         $project = Project::findOrFail($id);
+
+        if (! auth()->user()->can('update', $project)) {
+            return null;
+        }
+        
         $project->update($data);
         return $project;
     }
 
     public function delete(int $id): bool
     {
-        return Project::destroy($id) > 0;
+        $project = Project::findOrFail($id);
+        
+        // Check if the authenticated user owns this project
+        if (! auth()->user()->can('delete', $project)) {
+            return false;
+        }
+        
+        return $project->delete();
     }
 }

@@ -45,3 +45,89 @@ function something()
 {
     // ..
 }
+
+/*
+||--------------------------------------------------------------------------|
+||--------------------------------------------------------------------------|
+||                                                                         ||
+||                                                                         ||
+||                           GROUPING TESTS                                ||
+||                                                                         ||
+||                                                                         ||
+||--------------------------------------------------------------------------|
+||--------------------------------------------------------------------------|
+*/
+
+/*
+|
+| Pest allows grouping of tests using the `group()` method.
+| Grouping helps you organize and run subsets of your test suite
+| more efficiently. You can assign any group name (e.g., unit, integration,
+| feature) and run only that group using:
+|
+|     php artisan test --group=<group_name>
+|
+| This improves clarity and developer workflow when your project
+| contains different types of tests: unit, integration, and feature.
+|
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Unit Tests
+|--------------------------------------------------------------------------
+|
+| Group: 'unit'
+| Scope: Isolated logic tests that do not hit the database or Laravel core.
+| Location: tests/Unit/
+|
+| Run with:
+|     php artisan test --group=unit
+|
+*/
+uses()
+    ->group('unit')
+    ->in('Unit');
+
+/*
+|--------------------------------------------------------------------------
+| Feature Tests
+|--------------------------------------------------------------------------
+|
+| Group: 'feature'
+| Scope: End-to-end flow via HTTP (routes, controllers, views).
+| Simulates real user interaction with the app.
+| Location: tests/Feature/
+|
+| Run with:
+|     php artisan test --group=feature
+|
+*/
+uses()
+    ->group('feature')
+    ->in('Feature');
+
+/*
+|--------------------------------------------------------------------------
+| Integration Tests
+|--------------------------------------------------------------------------
+|
+| Group: 'integration'
+| Scope: Tests multiple layers working together (e.g., service + repo + DB).
+| No HTTP or controller involved.
+| Location: tests/Integration/
+|
+| Run with:
+|     php artisan test --group=integration
+|
+*/
+uses()
+    ->group('integration')
+    ->in('Integration');
+
+
+/*
+|--------------------------------------------------------------------------
+|        end of test grouping                                             |
+|--------------------------------------------------------------------------
+*/
