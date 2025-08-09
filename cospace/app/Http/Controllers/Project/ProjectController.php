@@ -15,6 +15,8 @@ use Src\Project\Entities\ProjectDTO;
 use Src\Project\Interfaces\ProjectServiceInterface;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProjectController extends Controller
 {
@@ -22,10 +24,16 @@ class ProjectController extends Controller
         protected ProjectServiceInterface $projectService
     ) {}
 
-    public function index(): JsonResponse
+    public function index(): Response
     {
-        $project = $this->projectService->list();
-        return response()->json($projects);
+        $projects = $this->projectService->list();
+
+        return Inertia::render(
+            "Project/Index",
+            [
+                "projects" => $projects,
+            ]
+        );
     }
 
     public function store(Request $request): JsonResponse
