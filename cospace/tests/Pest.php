@@ -1,5 +1,11 @@
 <?php
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(
+    RefreshDatabase::class,
+)->in('Browser');
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -99,7 +105,7 @@ uses()
 |     php artisan test --group=feature
 |
 */
-uses(Tests\TestCase::class)
+uses(Tests\TestCase::class, RefreshDatabase::class)
     ->group('feature')
     ->in('Feature');
 
@@ -117,7 +123,7 @@ uses(Tests\TestCase::class)
 |     php artisan test --group=integration
 |
 */
-uses(Tests\TestCase::class)
+uses(Tests\TestCase::class, RefreshDatabase::class)
     ->group('integration')
     ->in('Integration');
 
