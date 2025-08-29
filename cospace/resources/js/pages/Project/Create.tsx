@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Save, X, Eye, EyeOff } from 'lucide-react';
-import { convertGoogleDriveUrlToDirectImage, isGoogleDriveUrl } from '@/lib/google-drive-utils';
+import { getImageUrl, isGoogleDriveUrl } from '@/lib/google-drive-utils';
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
@@ -154,7 +154,7 @@ export default function Create() {
                                         <div className="mt-4 p-4 border rounded-lg bg-muted/50">
                                             <p className="text-sm text-muted-foreground mb-2">Image Preview:</p>
                                             <img 
-                                                src={convertGoogleDriveUrlToDirectImage(data.gif_url)} 
+                                                src={getImageUrl(data.gif_url)} 
                                                 alt="Preview" 
                                                 className="max-w-full max-h-64 rounded-lg shadow-lg"
                                                 onError={(e) => {
