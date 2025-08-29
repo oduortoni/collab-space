@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('gif_url')->nullable();
             $table->string('repo_url')->nullable();
+            $table->boolean('is_public')->default(false);
             $table->timestamps();
         });
     }

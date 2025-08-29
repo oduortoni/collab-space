@@ -10,12 +10,21 @@ import { Label } from '@/components/ui/label';
 import { Save, X, Eye, EyeOff } from 'lucide-react';
 import { getImageUrl, isGoogleDriveUrl } from '@/lib/google-drive-utils';
 
+
+
 export default function Create() {
-    const { data, setData, post, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm<{
+        title: string;
+        description: string;
+        gif_url: string;
+        repo_url: string;
+        is_public: boolean;
+    }>({
         title: '',
         description: '',
         gif_url: '',
         repo_url: '',
+        is_public: false,
     });
 
     const [clientErrors, setClientErrors] = React.useState<{
@@ -187,6 +196,28 @@ export default function Create() {
                                     />
                                     {clientErrors.repo_url && <div className="text-destructive text-sm mt-1">{clientErrors.repo_url}</div>}
                                     {errors.repo_url && <div className="text-destructive text-sm mt-1">{errors.repo_url}</div>}
+                                </div>
+
+                                <div className="space-y-2 p-4 border rounded-lg bg-muted/30">
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="checkbox"
+                                            id="is_public"
+                                            checked={data.is_public}
+                                            onChange={(e) => setData('is_public', Boolean(e.target.checked))}
+                                            className="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                        />
+                                        <Label htmlFor="is_public" className="cursor-pointer text-base font-medium">
+                                            {data.is_public ? 'Make project private' : 'Make project public'}
+                                        </Label>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground ml-8">
+                                        {data.is_public 
+                                            ? 'Public projects can be viewed by anyone, even without an account.'
+                                            : 'Private projects can only be viewed by you.'
+                                        }
+                                    </p>
+                                    {errors.is_public && <div className="text-destructive text-sm mt-1 ml-8">{errors.is_public}</div>}
                                 </div>
                             </CardContent>
                             <CardFooter className="flex justify-end gap-2">

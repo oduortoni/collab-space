@@ -18,6 +18,7 @@ class ProjectDTO
         public readonly ?string $description = null,
         public readonly ?string $gif_url = null,
         public readonly ?string $repo_url = null,
+        public readonly bool $is_public = false,
     ) {}
 
     public static function fromArray(array $data): self
@@ -28,6 +29,7 @@ class ProjectDTO
             description: $data['description'] ?? null,
             gif_url: $data['gif_url'] ?? null,
             repo_url: $data['repo_url'] ?? null,
+            is_public: $data['is_public'] ?? false,
         );
     }
 
@@ -39,6 +41,7 @@ class ProjectDTO
             'description' => $this->description,
             'gif_url' => $this->gif_url,
             'repo_url' => $this->repo_url,
+            'is_public' => $this->is_public,
         ];
     }
 }

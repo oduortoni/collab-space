@@ -16,6 +16,7 @@ class Project extends Model
         'description',
         'gif_url',
         'repo_url',
+        'is_public',
     ];
 
     public function user(): BelongsTo

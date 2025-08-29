@@ -12,6 +12,7 @@ interface Project {
     description: string;
     gif_url?: string;
     repo_url?: string;
+    is_public: boolean;
     created_at: string;
     updated_at: string;
 }
@@ -89,6 +90,16 @@ export default function Show({ project }: ShowPageProps) {
                                     <div className="flex flex-col">
                                         <span className="text-sm font-medium text-muted-foreground">Last Updated</span>
                                         <span>{new Date(project.updated_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-muted-foreground">Visibility</span>
+                                        <span className={`inline-flex items-center justify-center my-2.5 px-1.5 py-2.5 rounded-full text-sm font-medium ${
+                                            project.is_public 
+                                                ? 'bg-green-100 text-green-800' 
+                                                : 'bg-gray-100 text-gray-800'
+                                        }`}>
+                                            {project.is_public ? 'Public' : 'Private'}
+                                        </span>
                                     </div>
                                     {project.repo_url && (
                                         <Button asChild variant="outline">

@@ -17,9 +17,12 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ProjectController extends Controller
 {
+    use AuthorizesRequests;
+    
     protected \GuzzleHttp\Client $httpClient;
 
     public function __construct(
@@ -56,6 +59,7 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'gif_url' => 'nullable|url',
             'repo_url' => 'nullable|url',
+            'is_public' => 'nullable|boolean',
         ]);
 
         // Validate gif_url is a valid image URL (skip validation for empty or placeholder URLs)
@@ -82,9 +86,13 @@ class ProjectController extends Controller
         return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'Project created successfully!');
     }
 
-    public function show(int $id): Response
+    public function show(Request $request, int $id): Response
     {
         $project = $this->projectService->show($id);
+        
+        // Authorize the user can view this project
+        $this->authorize('view', $project);
+        
         return Inertia::render('Project/Show', [
             'project' => $project,
             'flash' => [
@@ -106,6 +114,7 @@ class ProjectController extends Controller
             'description' => 'nullable|string',
             'gif_url' => 'nullable|url',
             'repo_url' => 'nullable|url',
+            'is_public' => 'nullable|boolean',
         ]);
 
         // Validate gif_url is a valid image URL (skip validation for empty or placeholder URLs)
