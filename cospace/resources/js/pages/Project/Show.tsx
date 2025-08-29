@@ -4,6 +4,7 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Pencil, GitBranch } from 'lucide-react';
+import { getImageUrl } from '@/lib/google-drive-utils';
 
 interface Project {
     id: number;
@@ -65,7 +66,11 @@ export default function Show({ project }: ShowPageProps) {
                                     <CardDescription className="text-lg">{project.description}</CardDescription>
                                     {project.gif_url && (
                                         <div className="mt-6">
-                                            <img src={project.gif_url} alt={`${project.title} gif`} className="max-w-full rounded-lg shadow-lg" />
+                                            <img 
+                                                src={getImageUrl(project.gif_url)} 
+                                                alt={`${project.title} gif`} 
+                                                className="max-w-full rounded-lg shadow-lg" 
+                                            />
                                         </div>
                                     )}
                                 </CardContent>

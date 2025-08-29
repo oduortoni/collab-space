@@ -13,6 +13,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
+// Image proxy route
+Route::get('/image-proxy', [\App\Http\Controllers\ImageProxyController::class, 'proxy'])
+    ->name('image.proxy');
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 require __DIR__ . '/project/web.php';

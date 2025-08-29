@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Save, X } from 'lucide-react';
+import { Save, X, Eye, EyeOff } from 'lucide-react';
+import { convertGoogleDriveUrlToDirectImage, isGoogleDriveUrl } from '@/lib/google-drive-utils';
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
@@ -21,6 +22,7 @@ export default function Create() {
         gif_url?: string;
         repo_url?: string;
     }>({});
+    const [showPreview, setShowPreview] = React.useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -115,7 +117,21 @@ export default function Create() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="gif_url">GIF URL</Label>
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="gif_url">GIF URL</Label>
+                                        {data.gif_url && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setShowPreview(!showPreview)}
+                                                className="text-xs"
+                                            >
+                                                {showPreview ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
+                                                {showPreview ? 'Hide Preview' : 'Show Preview'}
+                                            </Button>
+                                        )}
+                                    </div>
                                     <Input
                                         type="url"
                                         id="gif_url"
@@ -126,11 +142,32 @@ export default function Create() {
                                             if (clientErrors.gif_url) {
                                                 setClientErrors({...clientErrors, gif_url: undefined});
                                             }
+                                            // Hide preview when URL changes
+                                            setShowPreview(false);
                                         }}
-                                        placeholder="https://example.com/demo.gif"
+                                        placeholder="https://example.com/demo.gif or Google Drive link"
                                     />
                                     {clientErrors.gif_url && <div className="text-destructive text-sm mt-1">{clientErrors.gif_url}</div>}
                                     {errors.gif_url && <div className="text-destructive text-sm mt-1">{errors.gif_url}</div>}
+                                    
+                                    {showPreview && data.gif_url && (
+                                        <div className="mt-4 p-4 border rounded-lg bg-muted/50">
+                                            <p className="text-sm text-muted-foreground mb-2">Image Preview:</p>
+                                            <img 
+                                                src={convertGoogleDriveUrlToDirectImage(data.gif_url)} 
+                                                alt="Preview" 
+                                                className="max-w-full max-h-64 rounded-lg shadow-lg"
+                                                onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                }}
+                                            />
+                                            {isGoogleDriveUrl(data.gif_url) && (
+                                                <p className="text-xs text-muted-foreground mt-2">
+                                                    Google Drive image detected
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
