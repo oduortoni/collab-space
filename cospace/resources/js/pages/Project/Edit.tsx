@@ -1,6 +1,14 @@
+import React from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Save, X, Eye, EyeOff } from 'lucide-react';
+import { getImageUrl, isGoogleDriveUrl } from '@/lib/google-drive-utils';
 
 interface Project {
     id: number;
@@ -8,38 +16,13 @@ interface Project {
     description: string;
     gif_url?: string;
     repo_url?: string;
-    created_at: string;
-    updated_at: string;
 }
 
 interface EditPageProps {
-    auth: {
-        user: {
-            id: number;
-            name: string;
-            email: string;
-        };
-    };
     project: Project;
-    [key: string]: any;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-    {
-        title: 'Projects',
-        href: '/projects',
-    },
-    {
-        title: 'Edit Project',
-        href: '#',
-    },
-];
-
-export default function Edit({ auth, project }: EditPageProps) {
+export default function Edit({ project }: EditPageProps) {
     const { data, setData, put, processing, errors } = useForm({
         title: project.title || '',
         description: project.description || '',
@@ -47,99 +30,192 @@ export default function Edit({ auth, project }: EditPageProps) {
         repo_url: project.repo_url || '',
     });
 
+    const [clientErrors, setClientErrors] = React.useState<{
+        gif_url?: string;
+        repo_url?: string;
+    }>({});
+    const [showPreview, setShowPreview] = React.useState(false);
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Projects',
+            href: route('projects.index'),
+        },
+        {
+            title: project.title,
+            href: route('projects.show', project.id),
+        },
+        {
+            title: 'Edit',
+            href: route('projects.edit', project.id),
+        },
+    ];
+
+    const validateUrl = (url: string, type: 'image' | 'github'): string | null => {
+        if (!url) return null;
+        try {
+            const parsedUrl = new URL(url);
+            if (type === 'image') {
+                // Check if this is a Google Drive URL
+                const isGoogleDrive = url.includes('drive.google.com/file/d/');
+                if (!isGoogleDrive) {
+                    const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+                    const ext = parsedUrl.pathname.split('.').pop()?.toLowerCase();
+                    if (!ext || !validExtensions.includes(ext)) {
+                        return 'Please enter a valid image URL (jpg, jpeg, png, gif, webp, svg) or Google Drive link.';
+                    }
+                }
+            } else if (type === 'github') {
+                const githubPattern = /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/;
+                if (!githubPattern.test(url)) {
+                    return 'Please enter a valid GitHub repository URL.';
+                }
+            }
+            return null;
+        } catch {
+            return 'Please enter a valid URL.';
+        }
+    };
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        const gifUrlError = validateUrl(data.gif_url, 'image');
+        const repoUrlError = validateUrl(data.repo_url, 'github');
+
+        if (gifUrlError || repoUrlError) {
+            // Set client-side errors and prevent submission
+            setClientErrors({
+                gif_url: gifUrlError || undefined,
+                repo_url: repoUrlError || undefined,
+            });
+            return;
+        }
+
+        // Clear client errors and submit
+        setClientErrors({});
         put(route('projects.update', project.id));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Edit Project" />
+            <Head title={`Edit ${project.title}`} />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Edit Project</h3>
-
-                            <form onSubmit={submit} className="space-y-6">
-                                <div>
-                                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Title *
-                                    </label>
-                                    <input
-                                        type="text"
+                <div className="max-w-3xl mx-auto sm:px-6 lg:px-8">
+                    <form onSubmit={submit}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Edit Project</CardTitle>
+                                <CardDescription>Update the details of your project below.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="title">Title *</Label>
+                                    <Input
                                         id="title"
                                         value={data.title}
                                         onChange={(e) => setData('title', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                         required
                                     />
-                                    {errors.title && <div className="text-red-600 text-sm mt-1">{errors.title}</div>}
+                                    {errors.title && <div className="text-destructive text-sm mt-1">{errors.title}</div>}
                                 </div>
 
-                                <div>
-                                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Description
-                                    </label>
-                                    <textarea
+                                <div className="space-y-2">
+                                    <Label htmlFor="description">Description</Label>
+                                    <Textarea
                                         id="description"
                                         value={data.description}
                                         onChange={(e) => setData('description', e.target.value)}
                                         rows={4}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                     />
-                                    {errors.description && <div className="text-red-600 text-sm mt-1">{errors.description}</div>}
+                                    {errors.description && <div className="text-destructive text-sm mt-1">{errors.description}</div>}
                                 </div>
 
-                                <div>
-                                    <label htmlFor="gif_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        GIF URL
-                                    </label>
-                                    <input
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="gif_url">GIF URL</Label>
+                                        {data.gif_url && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setShowPreview(!showPreview)}
+                                                className="text-xs"
+                                            >
+                                                {showPreview ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
+                                                {showPreview ? 'Hide Preview' : 'Show Preview'}
+                                            </Button>
+                                        )}
+                                    </div>
+                                    <Input
                                         type="url"
                                         id="gif_url"
                                         value={data.gif_url}
-                                        onChange={(e) => setData('gif_url', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                                        placeholder="https://example.com/demo.gif"
+                                        onChange={(e) => {
+                                            setData('gif_url', e.target.value);
+                                            if (clientErrors.gif_url) {
+                                                setClientErrors({...clientErrors, gif_url: undefined});
+                                            }
+                                            setShowPreview(false);
+                                        }}
+                                        placeholder="https://example.com/demo.gif or Google Drive link"
                                     />
-                                    {errors.gif_url && <div className="text-red-600 text-sm mt-1">{errors.gif_url}</div>}
+                                    {clientErrors.gif_url && <div className="text-destructive text-sm mt-1">{clientErrors.gif_url}</div>}
+                                    {errors.gif_url && <div className="text-destructive text-sm mt-1">{errors.gif_url}</div>}
+                                    {showPreview && data.gif_url && (
+                                        <div className="mt-4 p-4 border rounded-lg bg-muted/50">
+                                            <p className="text-sm text-muted-foreground mb-2">Image Preview:</p>
+                                            <img
+                                                src={getImageUrl(data.gif_url)}
+                                                alt="Preview"
+                                                className="max-w-full max-h-64 rounded-lg shadow-lg"
+                                                onError={(e) => {
+                                                    e.currentTarget.style.display = 'none';
+                                                }}
+                                            />
+                                            {isGoogleDriveUrl(data.gif_url) && (
+                                                <p className="text-xs text-muted-foreground mt-2">
+                                                    Google Drive image detected
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div>
-                                    <label htmlFor="repo_url" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Repository URL
-                                    </label>
-                                    <input
+                                <div className="space-y-2">
+                                    <Label htmlFor="repo_url">Repository URL</Label>
+                                    <Input
                                         type="url"
                                         id="repo_url"
                                         value={data.repo_url}
-                                        onChange={(e) => setData('repo_url', e.target.value)}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                        onChange={(e) => {
+                                            setData('repo_url', e.target.value);
+                                            // Clear client error when user starts typing
+                                            if (clientErrors.repo_url) {
+                                                setClientErrors({...clientErrors, repo_url: undefined});
+                                            }
+                                        }}
                                         placeholder="https://github.com/username/project"
                                     />
-                                    {errors.repo_url && <div className="text-red-600 text-sm mt-1">{errors.repo_url}</div>}
+                                    {clientErrors.repo_url && <div className="text-destructive text-sm mt-1">{clientErrors.repo_url}</div>}
+                                    {errors.repo_url && <div className="text-destructive text-sm mt-1">{errors.repo_url}</div>}
                                 </div>
-
-                                <div className="flex items-center justify-end space-x-3">
-                                    <Link
-                                        href={route('projects.show', project.id)}
-                                        className="inline-flex items-center px-4 py-2 bg-gray-300 dark:bg-gray-700 border border-transparent rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest hover:bg-gray-400 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
-                                    >
+                            </CardContent>
+                            <CardFooter className="flex justify-end gap-2">
+                                <Link href={route('projects.show', project.id)}>
+                                    <Button variant="outline">
+                                        <X className="mr-2 h-4 w-4" />
                                         Cancel
-                                    </Link>
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                                    >
-                                        {processing ? 'Updating...' : 'Update Project'}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                                    </Button>
+                                </Link>
+                                <Button type="submit" disabled={processing}>
+                                    <Save className="mr-2 h-4 w-4" />
+                                    {processing ? 'Updating...' : 'Update Project'}
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </form>
                 </div>
             </div>
         </AppLayout>

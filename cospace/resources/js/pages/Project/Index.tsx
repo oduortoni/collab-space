@@ -1,6 +1,10 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage, router } from '@inertiajs/react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { PlusCircle, Eye, Pencil, Trash2 } from 'lucide-react';
+import { DeleteProjectDialog } from '@/components/DeleteProjectDialog';
 
 interface Project {
     id: number;
@@ -22,7 +26,7 @@ interface ProjectsPageProps {
     flash: {
         message?: string;
     };
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -30,17 +34,19 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
     },
+    {
+        title: 'Projects',
+        href: '/projects',
+    },
 ];
 
-export default function Index({ auth, projects }: ProjectsPageProps) {
+export default function Index({ projects }: ProjectsPageProps) {
     const { flash } = usePage<ProjectsPageProps>().props;
 
     const deleteProject = (id: number) => {
-        if (confirm('Are you sure you want to delete this project?')) {
-            router.delete(route('projects.destroy', id), {
-                preserveScroll: true,
-            });
-        }
+        router.delete(route('projects.destroy', id), {
+            preserveScroll: true,
+        });
     };
 
     return (
@@ -55,50 +61,64 @@ export default function Index({ auth, projects }: ProjectsPageProps) {
                         </div>
                     )}
 
-                    <div className="flex justify-end mb-4">
-                        <Link
-                            href={route('projects.create')}
-                            className="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
-                        >
-                            Create Project
+                    <div className="flex justify-between items-center mb-8">
+                        <h1 className="text-3xl font-bold text-foreground">Your Projects</h1>
+                        <Link href={route('projects.create')}>
+                            <Button>
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Create Project
+                            </Button>
                         </Link>
                     </div>
 
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Your Projects</h3>
-                            {projects && projects.length > 0 ? (
-                                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                                    {projects.map((project) => (
-                                        <li key={project.id} className="py-4 flex items-center justify-between">
-                                            <div>
-                                                <Link href={route('projects.show', project.id)} className="text-lg font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">
-                                                    {project.title}
-                                                </Link>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{project.description}</p>
-                                            </div>
-                                            <div className="flex space-x-2">
-                                                <Link
-                                                    href={route('projects.edit', project.id)}
-                                                    className="text-sm text-gray-700 bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded"
-                                                >
-                                                    Edit
-                                                </Link>
-                                                <button
-                                                    onClick={() => deleteProject(project.id)}
-                                                    className="text-sm text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p>You don't have any projects yet. Create one!</p>
-                            )}
+                    {projects && projects.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {projects.map((project) => (
+                                <Card key={project.id} className="flex flex-col">
+                                    <CardHeader>
+                                        <CardTitle>{project.title}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="flex-grow">
+                                        <CardDescription>{project.description}</CardDescription>
+                                    </CardContent>
+                                    <CardFooter className="flex justify-end gap-2">
+                                        <Link href={route('projects.show', project.id)}>
+                                            <Button variant="outline" size="sm">
+                                                <Eye className="mr-2 h-4 w-4" />
+                                                View
+                                            </Button>
+                                        </Link>
+                                        <Link href={route('projects.edit', project.id)}>
+                                            <Button variant="secondary" size="sm">
+                                                <Pencil className="mr-2 h-4 w-4" />
+                                                Edit
+                                            </Button>
+                                        </Link>
+                                        <DeleteProjectDialog onConfirm={() => deleteProject(project.id)}>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Delete
+                                            </Button>
+                                        </DeleteProjectDialog>
+                                    </CardFooter>
+                                </Card>
+                            ))}
                         </div>
-                    </div>
+                    ) : (
+                        <div className="text-center py-16 border-dashed border-2 border-border rounded-lg">
+                            <h3 className="text-xl font-medium text-foreground">No projects yet!</h3>
+                            <p className="text-muted-foreground mt-2 mb-6">Get started by creating your first project.</p>
+                            <Link href={route('projects.create')}>
+                                <Button>
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    Create Project
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
         </AppLayout>

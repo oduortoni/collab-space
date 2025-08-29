@@ -1,6 +1,10 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Pencil, GitBranch } from 'lucide-react';
+import { getImageUrl } from '@/lib/google-drive-utils';
 
 interface Project {
     id: number;
@@ -21,26 +25,24 @@ interface ShowPageProps {
         };
     };
     project: Project;
-    [key: string]: any;
+    flash: {
+        message?: string;
+    };
+    [key: string]: unknown;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-    {
-        title: 'Projects',
-        href: '/projects',
-    },
-    {
-        title: 'Project Details',
-        href: '#',
-    },
-];
-
-export default function Show({ auth, project }: ShowPageProps) {
+export default function Show({ project }: ShowPageProps) {
     const { flash } = usePage<ShowPageProps>().props;
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Projects',
+            href: route('projects.index'),
+        },
+        {
+            title: project.title,
+            href: route('projects.show', project.id),
+        },
+    ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -54,33 +56,64 @@ export default function Show({ auth, project }: ShowPageProps) {
                         </div>
                     )}
 
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 text-gray-900 dark:text-gray-100">
-                        <h1 className="text-2xl font-bold mb-4">{project.title}</h1>
-                        <p className="mb-4">{project.description}</p>
-                        {project.gif_url && (
-                            <div className="mb-4">
-                                <img src={project.gif_url} alt={`${project.title} gif`} className="max-w-full rounded" />
-                            </div>
-                        )}
-                        {project.repo_url && (
-                            <p className="mb-4">
-                                Repository: <a href={project.repo_url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">{project.repo_url}</a>
-                            </p>
-                        )}
-
-                        <div className="flex space-x-4">
-                            <Link
-                                href={route('projects.edit', project.id)}
-                                className="inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 border border-transparent rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
-                            >
-                                Edit
-                            </Link>
-                            <Link
-                                href={route('projects.index')}
-                                className="inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 border border-transparent rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
-                            >
-                                Back to Projects
-                            </Link>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div className="lg:col-span-2">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-3xl font-bold">{project.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <CardDescription className="text-lg">{project.description}</CardDescription>
+                                    {project.gif_url && (
+                                        <div className="mt-6">
+                                            <img 
+                                                src={getImageUrl(project.gif_url)} 
+                                                alt={`${project.title} gif`} 
+                                                className="max-w-full rounded-lg shadow-lg" 
+                                            />
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Project Details</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-muted-foreground">Created At</span>
+                                        <span>{new Date(project.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-muted-foreground">Last Updated</span>
+                                        <span>{new Date(project.updated_at).toLocaleDateString()}</span>
+                                    </div>
+                                    {project.repo_url && (
+                                        <Button asChild variant="outline">
+                                            <a href={project.repo_url} target="_blank" rel="noopener noreferrer">
+                                                <GitBranch className="mr-2 h-4 w-4" />
+                                                View on GitHub
+                                            </a>
+                                        </Button>
+                                    )}
+                                    <div className="flex flex-col gap-2 pt-4">
+                                        <Link href={route('projects.edit', project.id)}>
+                                            <Button className="w-full">
+                                                <Pencil className="mr-2 h-4 w-4" />
+                                                Edit Project
+                                            </Button>
+                                        </Link>
+                                        <Link href={route('projects.index')}>
+                                            <Button variant="outline" className="w-full">
+                                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                                Back to Projects
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </div>

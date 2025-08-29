@@ -1,5 +1,11 @@
 <?php
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(
+    RefreshDatabase::class,
+)->in('Browser');
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -10,10 +16,6 @@
 | need to change it using the "pest()" function to bind a different classes or traits.
 |
 */
-
-pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -103,7 +105,7 @@ uses()
 |     php artisan test --group=feature
 |
 */
-uses()
+uses(Tests\TestCase::class, RefreshDatabase::class)
     ->group('feature')
     ->in('Feature');
 
@@ -121,7 +123,7 @@ uses()
 |     php artisan test --group=integration
 |
 */
-uses()
+uses(Tests\TestCase::class, RefreshDatabase::class)
     ->group('integration')
     ->in('Integration');
 
