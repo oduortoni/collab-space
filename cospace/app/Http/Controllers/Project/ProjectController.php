@@ -20,9 +20,14 @@ use Inertia\Response;
 
 class ProjectController extends Controller
 {
+    protected \GuzzleHttp\Client $httpClient;
+
     public function __construct(
-        protected ProjectServiceInterface $projectService
-    ) {}
+        protected ProjectServiceInterface $projectService,
+        \GuzzleHttp\Client $httpClient
+    ) {
+        $this->httpClient = $httpClient;
+    }
 
     public function index(): Response
     {
@@ -164,7 +169,7 @@ class ProjectController extends Controller
 
         // Verify the URL actually points to an image by checking headers
         try {
-            $client = new \GuzzleHttp\Client(['timeout' => 5]);
+            $client = $this->httpClient;
             
             // For Google Drive URLs, we need to use GET instead of HEAD to get proper content type
             if ($isGoogleDrive) {
@@ -232,7 +237,7 @@ class ProjectController extends Controller
 
         // Verify the GitHub repository exists and is accessible
         try {
-            $client = new \GuzzleHttp\Client(['timeout' => 5]);
+            $client = $this->httpClient;
             $response = $client->get($url, [
                 'headers' => [
                     'User-Agent' => 'CollabSpace/1.0',

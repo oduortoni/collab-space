@@ -4,12 +4,42 @@ namespace Tests\Feature;
 
 use App\Models\Project;
 use App\Models\User;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ProjectTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        // Create a mock HTTP client that simulates successful responses
+        $mock = new MockHandler([
+            // Mock responses for create test (GitHub + image validation)
+            new Response(200, ['Content-Type' => 'application/json']), // GitHub repo validation
+            new Response(200, ['Content-Type' => 'image/gif']),       // Image validation
+            
+            // Mock responses for update test (GitHub + image validation)
+            new Response(200, ['Content-Type' => 'application/json']), // GitHub repo validation
+            new Response(200, ['Content-Type' => 'image/gif']),       // Image validation
+            
+            // Additional responses for any other requests
+            new Response(200, ['Content-Type' => 'application/json']),
+            new Response(200, ['Content-Type' => 'image/gif']),
+        ]);
+        
+        $handlerStack = HandlerStack::create($mock);
+        $mockClient = new GuzzleClient(['handler' => $handlerStack]);
+        
+        // Bind the mock client to the container
+        $this->app->instance(GuzzleClient::class, $mockClient);
+    }
 
     public function test_user_can_create_a_project(): void
     {
