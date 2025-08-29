@@ -169,6 +169,77 @@ const CollabSpace = () => {
         </div>
       </section>
 
+      {/* Featured Projects */}
+      <section className="py-24 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-foreground">Featured Projects</h2>
+            <p className="text-xl text-muted-foreground">
+              Check out what the community is building
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Project Card 1 */}
+            <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card/80 backdrop-blur-sm">
+              <CardHeader className="p-0">
+                <img src="https://images.unsplash.com/photo-1618477388954-7852f32655ec?q=80&w=1964&auto=format&fit=crop" alt="Project Image" className="w-full h-48 object-cover"/>
+              </CardHeader>
+              <CardContent className="p-6">
+                <CardTitle className="text-xl mb-2">AI-Powered Code Reviewer</CardTitle>
+                <CardDescription className="mb-4">An intelligent assistant that reviews your code for style, errors, and best practices.</CardDescription>
+                <div className="flex gap-2 mb-4">
+                  <Badge variant="secondary">Python</Badge>
+                  <Badge variant="secondary">Machine Learning</Badge>
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Users className="h-4 w-4 mr-2" />
+                  <span>by @code_master</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Project Card 2 */}
+            <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card/80 backdrop-blur-sm">
+              <CardHeader className="p-0">
+                <img src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=2070&auto=format&fit=crop" alt="Project Image" className="w-full h-48 object-cover"/>
+              </CardHeader>
+              <CardContent className="p-6">
+                <CardTitle className="text-xl mb-2">Home Automation Dashboard</CardTitle>
+                <CardDescription className="mb-4">A sleek and intuitive dashboard to control all your smart home devices.</CardDescription>
+                <div className="flex gap-2 mb-4">
+                  <Badge variant="secondary">React</Badge>
+                  <Badge variant="secondary">Node.js</Badge>
+                  <Badge variant="secondary">IoT</Badge>
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Users className="h-4 w-4 mr-2" />
+                  <span>by @tinker_belle</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Project Card 3 */}
+            <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-card/80 backdrop-blur-sm">
+              <CardHeader className="p-0">
+                <img src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?q=80&w=2070&auto=format&fit=crop" alt="Project Image" className="w-full h-48 object-cover"/>
+              </CardHeader>
+              <CardContent className="p-6">
+                <CardTitle className="text-xl mb-2">3D Printed Robotics Arm</CardTitle>
+                <CardDescription className="mb-4">A fully functional robotics arm made with 3D printed parts and open-source hardware.</CardDescription>
+                <div className="flex gap-2 mb-4">
+                  <Badge variant="secondary">3D Printing</Badge>
+                  <Badge variant="secondary">Arduino</Badge>
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Users className="h-4 w-4 mr-2" />
+                  <span>by @maker_pro</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Community Stats */}
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-4xl text-center">
