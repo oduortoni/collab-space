@@ -3,7 +3,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Pencil, Github } from 'lucide-react';
+import { ArrowLeft, Pencil, GitBranch } from 'lucide-react';
 
 interface Project {
     id: number;
@@ -88,7 +88,7 @@ export default function Show({ project }: ShowPageProps) {
                                     {project.repo_url && (
                                         <Button asChild variant="outline">
                                             <a href={project.repo_url} target="_blank" rel="noopener noreferrer">
-                                                <Github className="mr-2 h-4 w-4" />
+                                                <GitBranch className="mr-2 h-4 w-4" />
                                                 View on GitHub
                                             </a>
                                         </Button>
