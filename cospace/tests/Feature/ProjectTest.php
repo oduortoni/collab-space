@@ -21,17 +21,17 @@ class ProjectTest extends TestCase
         
         // Create a mock HTTP client that simulates successful responses
         $mock = new MockHandler([
-            // Mock responses for create test (GitHub + image validation)
-            new Response(200, ['Content-Type' => 'application/json']), // GitHub repo validation
+            // Mock responses for create test (image validation + GitHub)
             new Response(200, ['Content-Type' => 'image/gif']),       // Image validation
+            new Response(200, ['Content-Type' => 'application/json']), // GitHub repo validation
             
-            // Mock responses for update test (GitHub + image validation)
-            new Response(200, ['Content-Type' => 'application/json']), // GitHub repo validation
+            // Mock responses for update test (image validation + GitHub)
             new Response(200, ['Content-Type' => 'image/gif']),       // Image validation
+            new Response(200, ['Content-Type' => 'application/json']), // GitHub repo validation
             
             // Additional responses for any other requests
-            new Response(200, ['Content-Type' => 'application/json']),
             new Response(200, ['Content-Type' => 'image/gif']),
+            new Response(200, ['Content-Type' => 'application/json']),
         ]);
         
         $handlerStack = HandlerStack::create($mock);
