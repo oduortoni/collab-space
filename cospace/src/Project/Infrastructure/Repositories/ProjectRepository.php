@@ -17,8 +17,11 @@ class ProjectRepository implements ProjectRepositoryInterface
 {
     public function paginateLatest(int $perPage): mixed
     {
-        $projects = Project::whereHas('user', function($query) {
-            $query->where('id', auth()->id());
+        $projects = Project::where(function($query) {
+            $query->where('is_public', true)
+                  ->orWhereHas('user', function($userQuery) {
+                      $userQuery->where('id', auth()->id());
+                  });
         })->latest()->paginate($perPage);
 
         return $projects;
