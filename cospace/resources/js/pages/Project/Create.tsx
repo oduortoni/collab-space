@@ -8,18 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Save, X } from 'lucide-react';
 
-interface CreatePageProps {
-    auth: {
-        user: {
-            id: number;
-            name: string;
-            email: string;
-        };
-    };
-    [key: string]: any;
-}
-
-export default function Create({ auth }: CreatePageProps) {
+export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         description: '',

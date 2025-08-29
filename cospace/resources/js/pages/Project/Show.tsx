@@ -3,7 +3,6 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Pencil, Github } from 'lucide-react';
 
 interface Project {
@@ -25,10 +24,13 @@ interface ShowPageProps {
         };
     };
     project: Project;
-    [key: string]: any;
+    flash: {
+        message?: string;
+    };
+    [key: string]: unknown;
 }
 
-export default function Show({ auth, project }: ShowPageProps) {
+export default function Show({ project }: ShowPageProps) {
     const { flash } = usePage<ShowPageProps>().props;
     const breadcrumbs: BreadcrumbItem[] = [
         {

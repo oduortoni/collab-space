@@ -17,18 +17,10 @@ interface Project {
 }
 
 interface EditPageProps {
-    auth: {
-        user: {
-            id: number;
-            name: string;
-            email: string;
-        };
-    };
     project: Project;
-    [key: string]: any;
 }
 
-export default function Edit({ auth, project }: EditPageProps) {
+export default function Edit({ project }: EditPageProps) {
     const { data, setData, put, processing, errors } = useForm({
         title: project.title || '',
         description: project.description || '',

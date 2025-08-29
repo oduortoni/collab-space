@@ -4,6 +4,7 @@ import { Head, Link, usePage, router } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, Eye, Pencil, Trash2 } from 'lucide-react';
+import { DeleteProjectDialog } from '@/components/DeleteProjectDialog';
 
 interface Project {
     id: number;
@@ -25,7 +26,7 @@ interface ProjectsPageProps {
     flash: {
         message?: string;
     };
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -39,15 +40,13 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Index({ auth, projects }: ProjectsPageProps) {
+export default function Index({ projects }: ProjectsPageProps) {
     const { flash } = usePage<ProjectsPageProps>().props;
 
     const deleteProject = (id: number) => {
-        if (confirm('Are you sure you want to delete this project?')) {
-            router.delete(route('projects.destroy', id), {
-                preserveScroll: true,
-            });
-        }
+        router.delete(route('projects.destroy', id), {
+            preserveScroll: true,
+        });
     };
 
     return (
@@ -95,14 +94,15 @@ export default function Index({ auth, projects }: ProjectsPageProps) {
                                                 Edit
                                             </Button>
                                         </Link>
-                                        <Button
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() => deleteProject(project.id)}
-                                        >
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Delete
-                                        </Button>
+                                        <DeleteProjectDialog onConfirm={() => deleteProject(project.id)}>
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                            >
+                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                Delete
+                                            </Button>
+                                        </DeleteProjectDialog>
                                     </CardFooter>
                                 </Card>
                             ))}
