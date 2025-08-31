@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,7 +64,7 @@ export default function Index({ project, members = [], roles = [] }: MembersPage
 
     const removeMember = (memberId: number) => {
         if (confirm('Are you sure you want to remove this member?')) {
-            useForm().delete(route('projects.members.destroy', [project.id, memberId]));
+            router.delete(route('projects.members.destroy', [project.id, memberId]));
         }
     };
 

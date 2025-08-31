@@ -20,8 +20,8 @@ interface User {
 interface AuditLog {
     id: number;
     action: string;
-    old_values?: Record<string, any>;
-    new_values?: Record<string, any>;
+    old_values?: Record<string, unknown>;
+    new_values?: Record<string, unknown>;
     notes?: string;
     user: User;
     created_at: string;
