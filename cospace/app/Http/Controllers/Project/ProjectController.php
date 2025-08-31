@@ -99,6 +99,7 @@ class ProjectController extends Controller
     public function show(Request $request, string $id): Response
     {
         $project = $this->projectService->show((int) $id);
+        $project->load('user');
 
         // Authorize the user can view this project
         $this->authorize('view', $project);

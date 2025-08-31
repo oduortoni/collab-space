@@ -19,9 +19,10 @@ interface Project {
 interface ChangeRequestFormProps {
     project: Project;
     canEditDirectly: boolean;
+    isOwner?: boolean;
 }
 
-export default function ChangeRequestForm({ project, canEditDirectly }: ChangeRequestFormProps) {
+export default function ChangeRequestForm({ project, canEditDirectly, isOwner = false }: ChangeRequestFormProps) {
     const { data, setData, post, processing, errors, reset } = useForm({
         field_name: '',
         new_value: '',
@@ -40,7 +41,7 @@ export default function ChangeRequestForm({ project, canEditDirectly }: ChangeRe
         { value: 'description', label: 'Description', current: project.description },
         { value: 'gif_url', label: 'GIF URL', current: project.gif_url || '' },
         { value: 'repo_url', label: 'Repository URL', current: project.repo_url || '' },
-        { value: 'is_public', label: 'Visibility', current: project.is_public ? 'Public' : 'Private' },
+        ...(isOwner ? [{ value: 'is_public', label: 'Visibility', current: project.is_public ? 'Public' : 'Private' }] : []),
     ];
 
     const selectedField = fieldOptions.find(field => field.value === data.field_name);
@@ -87,7 +88,8 @@ export default function ChangeRequestForm({ project, canEditDirectly }: ChangeRe
                                 <input
                                     type="checkbox"
                                     id="visibility_change"
-                                    onChange={(e) => setData('new_value', e.target.checked ? 'true' : 'false')}
+                                    checked={data.new_value === (!project.is_public).toString()}
+                                    onChange={(e) => setData('new_value', e.target.checked ? (!project.is_public).toString() : project.is_public.toString())}
                                     className="h-4 w-4 rounded border-gray-300"
                                 />
                                 <Label htmlFor="visibility_change">

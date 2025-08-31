@@ -16,6 +16,11 @@ interface Project {
     created_at: string;
     updated_at: string;
     user_id: number;
+    user?: {
+        id: number;
+        name: string;
+        email: string;
+    };
 }
 
 interface User {
@@ -117,6 +122,10 @@ export default function Show({ project }: ShowPageProps) {
                                     <div className="flex flex-col">
                                         <span className="text-sm font-medium text-muted-foreground">Last Updated</span>
                                         <span>{new Date(project.updated_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-muted-foreground">BDFL (Benevolent Dictator For Life)</span>
+                                        <span className="font-medium">{project.user?.name || 'Unknown'}</span>
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-sm font-medium text-muted-foreground">Visibility</span>

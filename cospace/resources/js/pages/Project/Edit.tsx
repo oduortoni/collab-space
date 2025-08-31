@@ -136,7 +136,7 @@ export default function Edit({ project }: EditPageProps) {
                     
                     {canProposeChanges && !canEditDirectly && (
                         <div className="mb-6">
-                            <ChangeRequestForm project={project} canEditDirectly={canEditDirectly} />
+                            <ChangeRequestForm project={project} canEditDirectly={canEditDirectly} isOwner={isOwner} />
                             <div className="mt-6">
                                 <Link href={route('projects.show', project.id)}>
                                     <Button variant="outline">
