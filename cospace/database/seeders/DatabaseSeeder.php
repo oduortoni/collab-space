@@ -17,9 +17,13 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'lynk',
-            'email' => 'link@mail.com',
-            'password' => 'password',
+            'email' => 'lynk@mail.com',
+            'password' => 'abcdeF1@',
         ]);
-        $this->call(ProjectSeeder::class);
+
+        $this->call([
+            ProjectRoleSeeder::class,
+            ProjectSeeder::class,
+        ]);
     }
 }
