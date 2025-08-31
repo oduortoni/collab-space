@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Project;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\ProjectMember;
 use App\Models\ProjectRole;
 use App\Models\User;
 use App\Models\ProjectAuditLog;
@@ -15,8 +16,9 @@ class ProjectMemberController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(Project $project)
+    public function index(string $id)
     {
+        $project = Project::findOrFail($id);
         $this->authorize('view', $project);
 
         $members = $project->members()->with(['user', 'role', 'invitedBy'])->get();
@@ -25,12 +27,13 @@ class ProjectMemberController extends Controller
         return inertia('Project/Members/Index', [
             'project' => $project,
             'members' => $members,
-            'availableRoles' => $availableRoles,
+            'roles' => $availableRoles,
         ]);
     }
 
-    public function store(Request $request, Project $project): RedirectResponse
+    public function store(Request $request, string $id): RedirectResponse
     {
+        $project = Project::findOrFail($id);
         $this->authorize('inviteMembers', $project);
 
         $validated = $request->validate([
@@ -62,8 +65,9 @@ class ProjectMemberController extends Controller
         return redirect()->back()->with('message', 'Member invited successfully!');
     }
 
-    public function update(Request $request, Project $project, ProjectMember $member): RedirectResponse
+    public function update(Request $request, string $id, ProjectMember $member): RedirectResponse
     {
+        $project = Project::findOrFail($id);
         $this->authorize('manageMembers', $project);
 
         $validated = $request->validate([
@@ -88,8 +92,9 @@ class ProjectMemberController extends Controller
         return redirect()->back()->with('message', 'Member role updated successfully!');
     }
 
-    public function destroy(Request $request, Project $project, ProjectMember $member): RedirectResponse
+    public function destroy(Request $request, string $id, ProjectMember $member): RedirectResponse
     {
+        $project = Project::findOrFail($id);
         $this->authorize('removeMembers', $project);
 
         // Prevent removing the project owner

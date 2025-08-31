@@ -10,8 +10,9 @@ use Inertia\Inertia;
 
 class ProjectAuditLogController extends Controller
 {
-    public function index(Request $request, Project $project)
+    public function index(Request $request, string $id)
     {
+        $project = Project::findOrFail($id);
         Gate::authorize('viewAuditLogs', $project);
 
         $query = $project->auditLogs()->with('user');

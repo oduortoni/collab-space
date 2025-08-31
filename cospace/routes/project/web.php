@@ -20,19 +20,19 @@ Route::prefix('projects')
             Route::delete('/{id}', [ProjectController::class, 'destroy'])->name('destroy');
             
             // Member management routes
-            Route::get('/{project}/members', [ProjectMemberController::class, 'index'])->name('members.index');
-            Route::post('/{project}/members', [ProjectMemberController::class, 'store'])->name('members.store');
-            Route::put('/{project}/members/{member}', [ProjectMemberController::class, 'update'])->name('members.update');
-            Route::delete('/{project}/members/{member}', [ProjectMemberController::class, 'destroy'])->name('members.destroy');
+            Route::get('/{id}/members', [ProjectMemberController::class, 'index'])->name('members.index');
+            Route::post('/{id}/members', [ProjectMemberController::class, 'store'])->name('members.store');
+            Route::put('/{id}/members/{member}', [ProjectMemberController::class, 'update'])->name('members.update');
+            Route::delete('/{id}/members/{member}', [ProjectMemberController::class, 'destroy'])->name('members.destroy');
             
             // Change request routes
-            Route::get('/{project}/change-requests', [ProjectChangeRequestController::class, 'index'])->name('change-requests.index');
-            Route::post('/{project}/change-requests', [ProjectChangeRequestController::class, 'store'])->name('change-requests.store');
-            Route::post('/{project}/change-requests/{changeRequest}/approve', [ProjectChangeRequestController::class, 'approve'])->name('change-requests.approve');
-            Route::post('/{project}/change-requests/{changeRequest}/reject', [ProjectChangeRequestController::class, 'reject'])->name('change-requests.reject');
+            Route::get('/{id}/change-requests', [ProjectChangeRequestController::class, 'index'])->name('change-requests.index');
+            Route::post('/{id}/change-requests', [ProjectChangeRequestController::class, 'store'])->name('change-requests.store');
+            Route::post('/{id}/change-requests/{changeRequest}/approve', [ProjectChangeRequestController::class, 'approve'])->name('change-requests.approve');
+            Route::post('/{id}/change-requests/{changeRequest}/reject', [ProjectChangeRequestController::class, 'reject'])->name('change-requests.reject');
             
             // Audit log routes
-            Route::get('/{project}/audit-logs', [ProjectAuditLogController::class, 'index'])->name('audit-logs.index');
+            Route::get('/{id}/audit-logs', [ProjectAuditLogController::class, 'index'])->name('audit-logs.index');
         });
         
         Route::get('/{id}', [ProjectController::class, 'show'])->name('show');

@@ -35,13 +35,14 @@ interface ProjectMember {
 
 interface MembersPageProps {
     project: Project;
-    members: ProjectMember[];
-    roles: ProjectRole[];
-    flash: { message?: string };
+    members?: ProjectMember[];
+    roles?: ProjectRole[];
+    flash?: { message?: string };
 }
 
-export default function Index({ project, members, roles }: MembersPageProps) {
+export default function Index({ project, members = [], roles = [] }: MembersPageProps) {
     const { flash } = usePage<MembersPageProps>().props;
+    const flashMessage = flash?.message;
     
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
@@ -73,9 +74,9 @@ export default function Index({ project, members, roles }: MembersPageProps) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {flash.message && (
+                    {flashMessage && (
                         <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                            {flash.message}
+                            {flashMessage}
                         </div>
                     )}
 

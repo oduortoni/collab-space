@@ -111,10 +111,29 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function edit(string $id): Response
+    public function edit(Request $request, string $id): Response
     {
         $project = $this->projectService->show((int) $id);
-        return Inertia::render('Project/Edit', ['project' => $project]);
+        
+        // Require authentication for all edit access
+        if (!$request->user()) {
+            return redirect()->route('login');
+        }
+        
+        // For private projects, only members can propose changes
+        if (!$project->is_public) {
+            $this->authorize('view', $project);
+        }
+        
+        $userRole = null;
+        if ($request->user()) {
+            $userRole = $project->getMemberRole($request->user());
+        }
+        
+        return Inertia::render('Project/Edit', [
+            'project' => $project,
+            'userRole' => $userRole,
+        ]);
     }
 
     public function update(Request $request, string $id): RedirectResponse

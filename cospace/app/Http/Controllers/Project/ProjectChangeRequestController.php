@@ -19,8 +19,9 @@ class ProjectChangeRequestController extends Controller
         private ProjectChangeRequestService $changeRequestService
     ) {}
 
-    public function index(Project $project)
+    public function index(string $id)
     {
+        $project = Project::findOrFail($id);
         $this->authorize('view', $project);
 
         $changeRequests = $project->changeRequests()
@@ -34,9 +35,15 @@ class ProjectChangeRequestController extends Controller
         ]);
     }
 
-    public function store(Request $request, Project $project): RedirectResponse
+    public function store(Request $request, string $id): RedirectResponse
     {
-        $this->authorize('update', $project);
+        $project = Project::findOrFail($id);
+        
+        // For public projects, any authenticated user can propose changes
+        // For private projects, only members can propose changes
+        if (!$project->is_public) {
+            $this->authorize('view', $project);
+        }
 
         $validated = $request->validate([
             'field_name' => 'required|string|in:title,description,gif_url,repo_url,is_public',
@@ -90,8 +97,9 @@ class ProjectChangeRequestController extends Controller
         return redirect()->back()->with('message', 'Change request submitted for approval!');
     }
 
-    public function approve(Request $request, Project $project, ProjectChangeRequest $changeRequest): RedirectResponse
+    public function approve(Request $request, string $id, ProjectChangeRequest $changeRequest): RedirectResponse
     {
+        $project = Project::findOrFail($id);
         $this->authorize('approveChanges', $project);
 
         if (!$changeRequest->isPending()) {
@@ -119,8 +127,9 @@ class ProjectChangeRequestController extends Controller
         return redirect()->back()->with('message', 'Change request approved and applied!');
     }
 
-    public function reject(Request $request, Project $project, ProjectChangeRequest $changeRequest): RedirectResponse
+    public function reject(Request $request, string $id, ProjectChangeRequest $changeRequest): RedirectResponse
     {
+        $project = Project::findOrFail($id);
         $this->authorize('approveChanges', $project);
 
         if (!$changeRequest->isPending()) {

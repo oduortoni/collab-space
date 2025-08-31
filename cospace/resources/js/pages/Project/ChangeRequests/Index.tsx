@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,12 +34,13 @@ interface ChangeRequest {
 
 interface ChangeRequestsPageProps {
     project: Project;
-    changeRequests: ChangeRequest[];
-    flash: { message?: string };
+    changeRequests?: ChangeRequest[];
+    flash?: { message?: string };
 }
 
-export default function Index({ project, changeRequests }: ChangeRequestsPageProps) {
+export default function Index({ project, changeRequests = [] }: ChangeRequestsPageProps) {
     const { flash } = usePage<ChangeRequestsPageProps>().props;
+    const flashMessage = flash?.message;
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Projects', href: route('projects.index') },
@@ -48,11 +49,15 @@ export default function Index({ project, changeRequests }: ChangeRequestsPagePro
     ];
 
     const approveRequest = (requestId: number, notes?: string) => {
-        useForm({ notes }).post(route('projects.change-requests.approve', [project.id, requestId]));
+        router.post(route('projects.change-requests.approve', [project.id, requestId]), {
+            notes: notes || ''
+        });
     };
 
     const rejectRequest = (requestId: number, notes?: string) => {
-        useForm({ notes }).post(route('projects.change-requests.reject', [project.id, requestId]));
+        router.post(route('projects.change-requests.reject', [project.id, requestId]), {
+            notes: notes || ''
+        });
     };
 
     const getStatusBadge = (status: string) => {
@@ -70,9 +75,9 @@ export default function Index({ project, changeRequests }: ChangeRequestsPagePro
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {flash.message && (
+                    {flashMessage && (
                         <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                            {flash.message}
+                            {flashMessage}
                         </div>
                     )}
 

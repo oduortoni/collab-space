@@ -42,9 +42,11 @@ interface EditPageProps {
 
 export default function Edit({ project }: EditPageProps) {
     const { auth, userRole, flash } = usePage<EditPageProps>().props;
+    const flashMessage = flash?.message;
     
     const isOwner = project.user_id === auth.user.id;
     const canEditDirectly = isOwner || userRole?.permissions?.includes('edit_project');
+    const canProposeChanges = project.is_public || canEditDirectly || userRole;
     const { data, setData, put, processing, errors } = useForm({
         title: project.title || '',
         description: project.description || '',
@@ -126,15 +128,31 @@ export default function Edit({ project }: EditPageProps) {
 
             <div className="py-12">
                 <div className="max-w-3xl mx-auto sm:px-6 lg:px-8">
-                    {flash.message && (
+                    {flashMessage && (
                         <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                            {flash.message}
+                            {flashMessage}
                         </div>
                     )}
                     
-                    {!canEditDirectly && (
+                    {canProposeChanges && !canEditDirectly && (
                         <div className="mb-6">
                             <ChangeRequestForm project={project} canEditDirectly={canEditDirectly} />
+                            <div className="mt-6">
+                                <Link href={route('projects.show', project.id)}>
+                                    <Button variant="outline">
+                                        <ArrowLeft className="mr-2 h-4 w-4" />
+                                        Back to Project
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {!canProposeChanges && (
+                        <div className="mb-6">
+                            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded">
+                                <p className="text-yellow-800">You don't have permission to edit this private project.</p>
+                            </div>
                             <div className="mt-6">
                                 <Link href={route('projects.show', project.id)}>
                                     <Button variant="outline">

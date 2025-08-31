@@ -39,11 +39,12 @@ interface PaginatedAuditLogs {
 interface AuditLogsPageProps {
     project: Project;
     auditLogs: PaginatedAuditLogs;
-    flash: { message?: string };
+    flash?: { message?: string };
 }
 
 export default function Index({ project, auditLogs }: AuditLogsPageProps) {
     const { flash } = usePage<AuditLogsPageProps>().props;
+    const flashMessage = flash?.message;
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Projects', href: route('projects.index') },
@@ -75,9 +76,9 @@ export default function Index({ project, auditLogs }: AuditLogsPageProps) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    {flash.message && (
+                    {flashMessage && (
                         <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                            {flash.message}
+                            {flashMessage}
                         </div>
                     )}
 
