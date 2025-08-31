@@ -86,13 +86,13 @@ class ProjectController extends Controller
         return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'Project created successfully!');
     }
 
-    public function show(Request $request, int $id): Response
+    public function show(Request $request, string $id): Response
     {
-        $project = $this->projectService->show($id);
-        
+        $project = $this->projectService->show((int) $id);
+
         // Authorize the user can view this project
         $this->authorize('view', $project);
-        
+
         return Inertia::render('Project/Show', [
             'project' => $project,
             'flash' => [
@@ -101,13 +101,13 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function edit(int $id): Response
+    public function edit(string $id): Response
     {
-        $project = $this->projectService->show($id);
+        $project = $this->projectService->show((int) $id);
         return Inertia::render('Project/Edit', ['project' => $project]);
     }
 
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, string $id): RedirectResponse
     {
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
@@ -132,7 +132,7 @@ class ProjectController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
-        $project = $this->projectService->update($dto, $id);
+        $project = $this->projectService->update($dto, (int) $id);
 
         if(is_null($project)) {
             return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'You cannot edit a project you did not create!');
@@ -141,14 +141,14 @@ class ProjectController extends Controller
         return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'Project updated successfully!');
     }
 
-    public function destroy(int $id): RedirectResponse
+    public function destroy(string $id): RedirectResponse
     {
-        $deleted = $this->projectService->delete($id);
+        $deleted = $this->projectService->delete((int) $id);
 
         if(!$deleted) {
             return redirect()->route('projects.index')->with('message', 'Could not delete a project you did not create!');
         }
-        
+
         return redirect()->route('projects.index')->with('message', 'Project deleted successfully!');
     }
 
