@@ -15,6 +15,7 @@ use Src\Project\Entities\ProjectDTO;
 use Src\Project\Interfaces\ProjectServiceInterface;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\Controller;
+use App\Models\ProjectAuditLog;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -79,6 +80,15 @@ class ProjectController extends Controller
 
         $project = $this->projectService->store($dto);
 
+        ProjectAuditLog::log(
+            $project,
+            $request->user(),
+            'project_created',
+            null,
+            $project->toArray(),
+            'Project created'
+        );
+
         if ($request->wantsJson()) {
             return response()->json($project, 201);
         }
@@ -132,22 +142,42 @@ class ProjectController extends Controller
             'user_id' => $request->user()->id,
         ]);
 
+        $originalProject = $this->projectService->show((int) $id);
         $project = $this->projectService->update($dto, (int) $id);
 
         if(is_null($project)) {
             return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'You cannot edit a project you did not create!');
         }
 
+        ProjectAuditLog::log(
+            $project,
+            $request->user(),
+            'project_updated',
+            $originalProject->toArray(),
+            $project->toArray(),
+            'Project updated'
+        );
+
         return redirect()->route('projects.show', ['id' => $project->id])->with('message', 'Project updated successfully!');
     }
 
     public function destroy(string $id): RedirectResponse
     {
+        $project = $this->projectService->show((int) $id);
         $deleted = $this->projectService->delete((int) $id);
 
         if(!$deleted) {
             return redirect()->route('projects.index')->with('message', 'Could not delete a project you did not create!');
         }
+
+        ProjectAuditLog::log(
+            $project,
+            request()->user(),
+            'project_deleted',
+            $project->toArray(),
+            null,
+            'Project deleted'
+        );
 
         return redirect()->route('projects.index')->with('message', 'Project deleted successfully!');
     }

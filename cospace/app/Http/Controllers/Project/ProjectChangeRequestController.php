@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
 use App\Models\ProjectAuditLog;
+use App\Services\ProjectChangeRequestService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -13,6 +14,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class ProjectChangeRequestController extends Controller
 {
     use AuthorizesRequests;
+
+    public function __construct(
+        private ProjectChangeRequestService $changeRequestService
+    ) {}
 
     public function index(Project $project)
     {
