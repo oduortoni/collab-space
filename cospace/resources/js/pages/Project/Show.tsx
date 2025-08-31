@@ -3,7 +3,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Pencil, GitBranch } from 'lucide-react';
+import { ArrowLeft, Pencil, GitBranch, Users, FileText, History } from 'lucide-react';
 import { getImageUrl } from '@/lib/google-drive-utils';
 
 interface Project {
@@ -15,6 +15,23 @@ interface Project {
     is_public: boolean;
     created_at: string;
     updated_at: string;
+    user_id: number;
+}
+
+interface User {
+    id: number;
+    name: string;
+    email: string;
+}
+
+interface ProjectMember {
+    id: number;
+    user: User;
+    role: {
+        name: string;
+        display_name: string;
+        permissions: string[];
+    };
 }
 
 interface ShowPageProps {
@@ -26,6 +43,12 @@ interface ShowPageProps {
         };
     };
     project: Project;
+    members?: ProjectMember[];
+    userRole?: {
+        name: string;
+        display_name: string;
+        permissions: string[];
+    };
     flash: {
         message?: string;
     };
@@ -33,7 +56,11 @@ interface ShowPageProps {
 }
 
 export default function Show({ project }: ShowPageProps) {
-    const { flash } = usePage<ShowPageProps>().props;
+    const { flash, auth, userRole } = usePage<ShowPageProps>().props;
+    
+    const isOwner = project.user_id === auth.user.id;
+    const canManageMembers = isOwner || userRole?.permissions?.includes('manage_members');
+    const canViewAuditLogs = isOwner || userRole?.permissions?.includes('view_audit_logs');
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Projects',
@@ -116,6 +143,32 @@ export default function Show({ project }: ShowPageProps) {
                                                 Edit Project
                                             </Button>
                                         </Link>
+                                        
+                                        {canManageMembers && (
+                                            <Link href={route('projects.members.index', project.id)}>
+                                                <Button variant="outline" className="w-full">
+                                                    <Users className="mr-2 h-4 w-4" />
+                                                    Manage Members
+                                                </Button>
+                                            </Link>
+                                        )}
+                                        
+                                        <Link href={route('projects.change-requests.index', project.id)}>
+                                            <Button variant="outline" className="w-full">
+                                                <FileText className="mr-2 h-4 w-4" />
+                                                Change Requests
+                                            </Button>
+                                        </Link>
+                                        
+                                        {canViewAuditLogs && (
+                                            <Link href={route('projects.audit-logs.index', project.id)}>
+                                                <Button variant="outline" className="w-full">
+                                                    <History className="mr-2 h-4 w-4" />
+                                                    Audit Logs
+                                                </Button>
+                                            </Link>
+                                        )}
+                                        
                                         <Link href={route('projects.index')}>
                                             <Button variant="outline" className="w-full">
                                                 <ArrowLeft className="mr-2 h-4 w-4" />

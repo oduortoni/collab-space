@@ -1,14 +1,15 @@
 import React from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Save, X, Eye, EyeOff } from 'lucide-react';
+import { Save, X, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { getImageUrl, isGoogleDriveUrl } from '@/lib/google-drive-utils';
+import ChangeRequestForm from '@/components/ChangeRequestForm';
 
 interface Project {
     id: number;
@@ -17,13 +18,33 @@ interface Project {
     gif_url?: string;
     repo_url?: string;
     is_public: boolean;
+    user_id: number;
 }
 
 interface EditPageProps {
+    auth: {
+        user: {
+            id: number;
+            name: string;
+            email: string;
+        };
+    };
     project: Project;
+    userRole?: {
+        name: string;
+        display_name: string;
+        permissions: string[];
+    };
+    flash: {
+        message?: string;
+    };
 }
 
 export default function Edit({ project }: EditPageProps) {
+    const { auth, userRole, flash } = usePage<EditPageProps>().props;
+    
+    const isOwner = project.user_id === auth.user.id;
+    const canEditDirectly = isOwner || userRole?.permissions?.includes('edit_project');
     const { data, setData, put, processing, errors } = useForm({
         title: project.title || '',
         description: project.description || '',
@@ -105,6 +126,27 @@ export default function Edit({ project }: EditPageProps) {
 
             <div className="py-12">
                 <div className="max-w-3xl mx-auto sm:px-6 lg:px-8">
+                    {flash.message && (
+                        <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                            {flash.message}
+                        </div>
+                    )}
+                    
+                    {!canEditDirectly && (
+                        <div className="mb-6">
+                            <ChangeRequestForm project={project} canEditDirectly={canEditDirectly} />
+                            <div className="mt-6">
+                                <Link href={route('projects.show', project.id)}>
+                                    <Button variant="outline">
+                                        <ArrowLeft className="mr-2 h-4 w-4" />
+                                        Back to Project
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {canEditDirectly && (
                     <form onSubmit={submit}>
                         <Card>
                             <CardHeader>
@@ -240,6 +282,7 @@ export default function Edit({ project }: EditPageProps) {
                             </CardFooter>
                         </Card>
                     </form>
+                    )}
                 </div>
             </div>
         </AppLayout>
