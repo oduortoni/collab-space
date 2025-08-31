@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Src\Project\Services;
 
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
