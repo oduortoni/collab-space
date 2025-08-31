@@ -126,7 +126,7 @@ export default function Index({ project, auditLogs }: AuditLogsPageProps) {
                                                     {log.old_values && (
                                                         <div>
                                                             <span className="font-medium text-muted-foreground">Before:</span>
-                                                            <pre className="mt-1 p-2 bg-red-50 rounded text-xs overflow-x-auto">
+                                                            <pre className="mt-1 p-2 bg-muted/30 rounded text-xs whitespace-pre-wrap break-words">
                                                                 {JSON.stringify(log.old_values, null, 2)}
                                                             </pre>
                                                         </div>
@@ -134,7 +134,7 @@ export default function Index({ project, auditLogs }: AuditLogsPageProps) {
                                                     {log.new_values && (
                                                         <div>
                                                             <span className="font-medium text-muted-foreground">After:</span>
-                                                            <pre className="mt-1 p-2 bg-green-50 rounded text-xs overflow-x-auto">
+                                                            <pre className="mt-1 p-2 bg-muted/50 rounded text-xs whitespace-pre-wrap break-words">
                                                                 {JSON.stringify(log.new_values, null, 2)}
                                                             </pre>
                                                         </div>

@@ -40,7 +40,7 @@ export default function ChangeRequestForm({ project, canEditDirectly }: ChangeRe
         { value: 'description', label: 'Description', current: project.description },
         { value: 'gif_url', label: 'GIF URL', current: project.gif_url || '' },
         { value: 'repo_url', label: 'Repository URL', current: project.repo_url || '' },
-        { value: 'is_public', label: 'Visibility', current: project.is_public ? 'true' : 'false' },
+        { value: 'is_public', label: 'Visibility', current: project.is_public ? 'Public' : 'Private' },
     ];
 
     const selectedField = fieldOptions.find(field => field.value === data.field_name);
@@ -83,15 +83,17 @@ export default function ChangeRequestForm({ project, canEditDirectly }: ChangeRe
                     <div>
                         <Label htmlFor="new_value">New Value</Label>
                         {data.field_name === 'is_public' ? (
-                            <Select value={data.new_value} onValueChange={(value) => setData('new_value', value)}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select visibility" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="true">Public</SelectItem>
-                                    <SelectItem value="false">Private</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="checkbox"
+                                    id="visibility_change"
+                                    onChange={(e) => setData('new_value', e.target.checked ? 'true' : 'false')}
+                                    className="h-4 w-4 rounded border-gray-300"
+                                />
+                                <Label htmlFor="visibility_change">
+                                    Change to {project.is_public ? 'Private' : 'Public'}
+                                </Label>
+                            </div>
                         ) : data.field_name === 'description' ? (
                             <Textarea
                                 id="new_value"

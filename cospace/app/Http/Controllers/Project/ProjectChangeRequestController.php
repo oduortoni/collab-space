@@ -50,6 +50,11 @@ class ProjectChangeRequestController extends Controller
             'new_value' => 'required|string',
             'reason' => 'nullable|string|max:500',
         ]);
+        
+        // Only project owner can change visibility
+        if ($validated['field_name'] === 'is_public' && !$project->isOwner($request->user())) {
+            return redirect()->back()->withErrors(['field_name' => 'Only the project owner can change visibility.']);
+        }
 
         // Get current value
         $oldValue = $project->{$validated['field_name']};

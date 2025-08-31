@@ -119,11 +119,11 @@ export default function Index({ project, changeRequests = [] }: ChangeRequestsPa
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                                 <div>
                                                     <span className="text-sm font-medium text-muted-foreground">From:</span>
-                                                    <p className="mt-1 p-2 bg-red-50 rounded border">{request.old_value}</p>
+                                                    <p className="mt-1 p-2 bg-muted/30 rounded border break-words">{request.old_value}</p>
                                                 </div>
                                                 <div>
                                                     <span className="text-sm font-medium text-muted-foreground">To:</span>
-                                                    <p className="mt-1 p-2 bg-green-50 rounded border">{request.new_value}</p>
+                                                    <p className="mt-1 p-2 bg-muted/50 rounded border break-words">{request.new_value}</p>
                                                 </div>
                                             </div>
 
